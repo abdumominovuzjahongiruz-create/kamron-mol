@@ -1,24 +1,415 @@
-<!doctype html>
-<html lang="en" class="scroll-smooth">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta
-      name="description"
-      content="ISHTOP — O'zbekiston uchun mahalliy ishchi va frilanserlar platformasi. Ustalar, kunlik ishchilar, IT xizmatlar."
-    />
-    <meta name="theme-color" content="#5a4bf4" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <title>ISHTOP — Ish top! Usta va frilanserlar</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tezkor Market</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styl.css">
+</head>
+
+<body>
+
+    <div class="top-bar">
+        <div class="container top-bar-content">
+            <div class="top-left-info">
+                <button class="location-btn" onclick="openModal('locationModal')">
+                    <i class="fa-solid fa-location-dot" style="color: #ffc107;"></i> Shahar: <strong
+                        id="selectedCity">Toshkent</strong> <i class="fa-solid fa-chevron-down"
+                        style="font-size: 11px;"></i>
+                </button>
+                <span class="delivery-info"><i class="fa-solid fa-truck-fast"></i> Topshirish punktlari va bepul
+                    yetkazib berish</span>
+            </div>
+            <div class="top-links">
+                <a href="admin.html"><i class="fa-solid fa-lock"></i> Admin Panel</a>
+                <a href="#footer"><i class="fa-solid fa-headset"></i> Yordam</a>
+            </div>
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="container header-container">
+            <a href="#" class="logo">
+                <i class="fa-solid fa-bolt logo-icon"></i>
+                <div class="logo-text">
+                    <span class="logo-title">Tezkor Market</span>
+                    <span class="logo-subtitle">Qulay va tez xarid</span>
+                </div>
+            </a>
+
+            <div class="header-actions">
+                <button class="action-btn search-toggle-btn" onclick="toggleSearchBox()" title="Qidirish">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span>Qidirish</span>
+                </button>
+
+                <button class="action-btn catalog-btn" onclick="toggleCatalog()">
+                    <i class="fa-solid fa-border-all"></i>
+                    <span>Katalog</span>
+                </button>
+
+                <button class="action-btn" onclick="openModal('profileModal')">
+                    <i class="fa-regular fa-user"></i>
+                    <span>Profil</span>
+                </button>
+
+                <button class="action-btn cart-btn" onclick="openCart()">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span>Savat</span>
+                    <span class="badge" id="cartBadge">0</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="expand-search-box" id="expandSearchBox">
+            <div class="container search-inner">
+                <i class="fa-solid fa-magnifying-glass search-input-icon"></i>
+                <input type="text" id="searchInput" placeholder="Mahsulotlarni qidirish joyi..."
+                    onkeyup="searchProducts()">
+                <button class="close-search-btn" onclick="toggleSearchBox()">&times;</button>
+            </div>
+        </div>
+    </header>
+
+    <nav class="categories-nav">
+        <div class="container">
+            <div class="section-title-sm">
+                <i class="fa-solid fa-layer-group"></i>
+                <span>Maxsulotlar bo'limlari:</span>
+            </div>
+            <div class="categories-wrapper" id="categoriesWrapper">
+
+            </div>
+        </div>
+    </nav>
+
+    <div class="catalog-dropdown" id="catalogDropdown">
+        <div class="container mega-catalog-container">
+            <div class="catalog-sidebar" id="catalogSidebar">
+            </div>
+            <div class="catalog-content" id="catalogContent">
+            </div>
+        </div>
+    </div>
+
+    <main class="main-content container">
+
+        <section class="banner-section">
+            <div class="banner-carousel" id="bannerCarousel">
+                <div class="banner-slide active" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);">
+                    <div class="banner-badge-top">
+                        <span class="badge-tag"><i class="fa-solid fa-fire" style="color: #f59e0b;"></i> Top Mahsulot
+                            #1</span>
+                        <span class="ad-tag" style="background: #ef4444;">Chegirma -10%</span>
+                    </div>
+                    <div class="banner-body">
+                        <div class="banner-text-content">
+                            <h2 class="banner-heading">iPhone 15 Pro Max 256GB</h2>
+                            <p class="banner-subheading">A17 Pro chipi, titanium korpus & 48MP kamera</p>
+                            <div class="banner-price-row">
+                                <span class="banner-price">15,400,000 so'm</span>
+                                <span class="banner-old-price">17,200,000 so'm</span>
+                            </div>
+                            <div class="banner-actions-row">
+                                <button class="btn btn-primary" onclick="addToCart(1)"><i
+                                        class="fa-solid fa-cart-plus"></i> Savatga qo'shish</button>
+                                <button class="btn btn-outline" style="color:#fff; border-color:rgba(255,255,255,0.3);"
+                                    onclick="openProductDetail(1)">Batafsil</button>
+                            </div>
+                        </div>
+                        <div class="banner-img-box" onclick="openProductDetail(1)">
+                            <img src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=600&auto=format&fit=crop&q=80"
+                                alt="iPhone 15 Pro Max">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="banner-slide" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+                    <div class="banner-badge-top">
+                        <span class="badge-tag"><i class="fa-solid fa-laptop" style="color: #38bdf8;"></i> Top Mahsulot
+                            #2</span>
+                        <span class="ad-tag" style="background: #7000ff;">Premium</span>
+                    </div>
+                    <div class="banner-body">
+                        <div class="banner-text-content">
+                            <h2 class="banner-heading">MacBook Pro 16 M3 Max</h2>
+                            <p class="banner-subheading">36GB RAM / 1TB SSD Space Black qudratli noutbuk</p>
+                            <div class="banner-price-row">
+                                <span class="banner-price">36,500,000 so'm</span>
+                                <span class="banner-old-price">39,000,000 so'm</span>
+                            </div>
+                            <div class="banner-actions-row">
+                                <button class="btn btn-primary" onclick="addToCart(3)"><i
+                                        class="fa-solid fa-cart-plus"></i> Savatga qo'shish</button>
+                                <button class="btn btn-outline" style="color:#fff; border-color:rgba(255,255,255,0.3);"
+                                    onclick="openProductDetail(3)">Batafsil</button>
+                            </div>
+                        </div>
+                        <div class="banner-img-box" onclick="openProductDetail(3)">
+                            <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&auto=format&fit=crop&q=80"
+                                alt="MacBook Pro">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="banner-slide" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+                    <div class="banner-badge-top">
+                        <span class="badge-tag"><i class="fa-solid fa-bolt" style="color: #f59e0b;"></i> Top Mahsulot
+                            #3</span>
+                        <span class="ad-tag" style="background: #10b981;">Xit Sotuv</span>
+                    </div>
+                    <div class="banner-body">
+                        <div class="banner-text-content">
+                            <h2 class="banner-heading">Samsung Galaxy S24 Ultra 512GB</h2>
+                            <p class="banner-subheading">Galaxy AI imkoniyatlari, 200MP kamera & S-Pen</p>
+                            <div class="banner-price-row">
+                                <span class="banner-price">14,200,000 so'm</span>
+                                <span class="banner-old-price">16,000,000 so'm</span>
+                            </div>
+                            <div class="banner-actions-row">
+                                <button class="btn btn-primary" onclick="addToCart(2)"><i
+                                        class="fa-solid fa-cart-plus"></i> Savatga qo'shish</button>
+                                <button class="btn btn-outline" style="color:#fff; border-color:rgba(255,255,255,0.3);"
+                                    onclick="openProductDetail(2)">Batafsil</button>
+                            </div>
+                        </div>
+                        <div class="banner-img-box" onclick="openProductDetail(2)">
+                            <img src="https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=600&auto=format&fit=crop&q=80"
+                                alt="Galaxy S24 Ultra">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="banner-slide" style="background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);">
+                    <div class="banner-badge-top">
+                        <span class="badge-tag"><i class="fa-solid fa-headphones" style="color: #f472b6;"></i> Top
+                            Mahsulot #4</span>
+                        <span class="ad-tag" style="background: #f59e0b;">Mashhur</span>
+                    </div>
+                    <div class="banner-body">
+                        <div class="banner-text-content">
+                            <h2 class="banner-heading">Sony WH-1000XM5 Quloqchin</h2>
+                            <p class="banner-subheading">Aktiv shovqin bosish (ANC) va 30 soatlik tinik ovoz</p>
+                            <div class="banner-price-row">
+                                <span class="banner-price">4,300,000 so'm</span>
+                                <span class="banner-old-price">4,900,000 so'm</span>
+                            </div>
+                            <div class="banner-actions-row">
+                                <button class="btn btn-primary" onclick="addToCart(4)"><i
+                                        class="fa-solid fa-cart-plus"></i> Savatga qo'shish</button>
+                                <button class="btn btn-outline" style="color:#fff; border-color:rgba(255,255,255,0.3);"
+                                    onclick="openProductDetail(4)">Batafsil</button>
+                            </div>
+                        </div>
+                        <div class="banner-img-box" onclick="openProductDetail(4)">
+                            <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop&q=80"
+                                alt="Sony Headphones">
+                        </div>
+                    </div>
+                </div>
+
+                <button class="banner-nav prev-btn" onclick="prevSlide()"><i
+                        class="fa-solid fa-chevron-left"></i></button>
+                <button class="banner-nav next-btn" onclick="nextSlide()"><i
+                        class="fa-solid fa-chevron-right"></i></button>
+
+                <div class="banner-dots" id="bannerDots">
+                    <span class="dot active" onclick="goToSlide(0)"></span>
+                    <span class="dot" onclick="goToSlide(1)"></span>
+                    <span class="dot" onclick="goToSlide(2)"></span>
+                    <span class="dot" onclick="goToSlide(3)"></span>
+                </div>
+            </div>
+        </section>
+
+        <section class="quick-promo-row">
+            <div class="promo-card" onclick="filterCategory('Maishiy texnika')">
+                <div class="promo-icon" style="background: #e0f2fe; color: #0284c7;"><i class="fa-solid fa-tv"></i>
+                </div>
+                <span>Maishiy texnika</span>
+            </div>
+            <div class="promo-card" onclick="filterCategory('Barchasi')">
+                <div class="promo-icon" style="background: #f3e8ff; color: #7000ff;"><i
+                        class="fa-solid fa-basket-shopping"></i></div>
+                <span>Kundalik ishlatishga</span>
+            </div>
+            <div class="promo-card" onclick="filterCategory('Telefonlar')">
+                <div class="promo-icon" style="background: #dcfce7; color: #16a34a;"><i
+                        class="fa-solid fa-mobile-screen-button"></i></div>
+                <span>Zamonaviy bozor</span>
+            </div>
+            <div class="promo-card" onclick="filterCategory('Kiyimlar')">
+                <div class="promo-icon" style="background: #fef3c7; color: #d97706;"><i
+                        class="fa-solid fa-graduation-cap"></i></div>
+                <span>Maktab bozori</span>
+            </div>
+        </section>
+
+        <div class="content-header">
+            <div>
+                <h1 class="page-title" id="pageTitle">Maxsulotlar joyi va ma'lumotlari</h1>
+                <p class="page-subtitle">Sifatli va kafolatlangan original tovarlar ro'yxati</p>
+            </div>
+            <div class="filter-controls">
+                <select id="sortSelect" onchange="sortProducts()">
+                    <option value="default">Saralash: Standart</option>
+                    <option value="price-asc">Narxi: Arzondan qimmatga</option>
+                    <option value="price-desc">Narxi: Qimmatdan arsonga</option>
+                    <option value="rating">Reyting: Yuqoridan pastga</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="products-grid" id="productsGrid">
+        </div>
+
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <i class="fa-solid fa-box-open empty-icon"></i>
+            <h3>Mahsulot topilmadi</h3>
+            <p>Qidiruv so'rovingizga mos mahsulot mavjud emas. Iltimos boshqa so'z bilan qidirib ko'ring.</p>
+            <button class="btn btn-primary" onclick="resetSearch()">Barcha mahsulotlarni ko'rish</button>
+        </div>
+    </main>
+
+    <div class="modal" id="locationModal">
+        <div class="modal-content location-modal-content">
+            <span class="close-modal" onclick="closeModal('locationModal')">&times;</span>
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-location-dot" style="color: var(--primary-color);"></i> Yetkazib berish
+                    shahrini tanlang</h2>
+            </div>
+            <div class="modal-body">
+                <p class="admin-notice">Buyurtmangiz tez va aniq yetib borishi uchun viloyatingizni tanlang:</p>
+                <div class="regions-grid" id="regionsGrid">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="productModal">
+        <div class="modal-content product-modal-content">
+            <span class="close-modal" onclick="closeModal('productModal')">&times;</span>
+            <div class="product-detail-layout" id="productModalBody">
+
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="profileModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('profileModal')">&times;</span>
+            <div class="modal-header">
+                <h2><i class="fa-regular fa-user"></i> Foydalanuvchi Profili</h2>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="loginEmail">Telefon raqam yoki Email</label>
+                        <input type="text" id="loginEmail" placeholder="+998 90 123 45 67" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPass">Parol</label>
+                        <input type="password" id="loginPass" placeholder="******" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Tizimga Kirish</button>
+                </form>
+                <div class="modal-footer-text">
+                    <p>Hali hisobingiz yo'qmi? <a href="#"
+                            onclick="alert('Ro\'yxatdan o\'tish sahifasi tez orada qo\'shiladi!')">Ro'yxatdan o'tish</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+    <aside class="cart-drawer" id="cartDrawer">
+        <div class="cart-header">
+            <h3><i class="fa-solid fa-cart-shopping"></i> Xarid Savatchasi</h3>
+            <button class="close-cart-btn" onclick="closeCart()">&times; </button>
+        </div>
+        <div class="cart-body" id="cartBody">
+        </div>
+        <div class="cart-footer">
+            <div class="cart-summary-line">
+                <span>Mahsulotlar soni:</span>
+                <span id="cartTotalItems">0 ta</span>
+            </div>
+            <div class="cart-summary-line">
+                <span>Yetkazib berish:</span>
+                <span class="free-text">Tekin (Bepul)</span>
+            </div>
+            <div class="cart-summary-line total-price-line">
+                <span>Jami summa:</span>
+                <span id="cartTotalPrice">0 so'm</span>
+            </div>
+            <button class="btn btn-primary btn-block checkout-btn" onclick="checkout()">
+                <i class="fa-solid fa-check"></i> Buyurtmani Rasmiylashtirish
+            </button>
+        </div>
+    </aside>
+    <div class="toast" id="toast"></div>
+    <footer class="footer" id="footer">
+        <div class="container footer-grid">
+            <div class="footer-col">
+                <div class="logo footer-logo">
+                    <i class="fa-solid fa-bolt logo-icon"></i>
+                    <span class="logo-title">Tezkor Market</span>
+                </div>
+                <p class="footer-desc">Tezkor Market - O'zbekistondagi eng zamonaviy, tez va qulay onlayn savdo
+                    platformasi.</p>
+                <div class="social-links">
+                    <a href="https://telegram.org" target="_blank" title="Telegram"><i
+                            class="fa-brands fa-telegram"></i></a>
+                    <a href="https://instagram.com" target="_blank" title="Instagram"><i
+                            class="fa-brands fa-instagram"></i></a>
+                    <a href="https://facebook.com" target="_blank" title="Facebook"><i
+                            class="fa-brands fa-facebook"></i></a>
+                    <a href="https://youtube.com" target="_blank" title="YouTube"><i
+                            class="fa-brands fa-youtube"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h4>Biz haqimizda</h4>
+                <ul>
+                    <li><a href="#">Kompaniya haqida</a></li>
+                    <li><a href="#">Bo'sh ish o'rinlari</a></li>
+                    <li><a href="#">Yangiliklar</a></li>
+                    <li><a href="#">Hamkorlik</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Xaridorlarga</h4>
+                <ul>
+                    <li><a href="#">Qanday buyurtma beriladi?</a></li>
+                    <li><a href="#">Yetkazib berish va to'lov</a></li>
+                    <li><a href="#">Kafolat va qaytarish</a></li>
+                    <li><a href="#">Savol-javoblar</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Mobil Ilovani Yuklang</h4>
+                <p>Tezkor Market mobil ilovasi orqali yanada tez va qulay xarid qiling!</p>
+                <div class="app-badges">
+                    <a href="#" class="app-btn"><i class="fa-brands fa-google-play"></i> Google Play</a>
+                    <a href="#" class="app-btn"><i class="fa-brands fa-apple"></i> App Store</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="container">
+                <p>&copy; 2026 Tezkor Market. Barcha huquqlar himoyalangan.</p>
+            </div>
+        </div>
+    </footer>
+    <script src="app.js"></script>
+</body>
+
 </html>

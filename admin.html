@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tezkor Market - Boshqaruv Paneli (Admin Panel)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    <div class="admin-auth-overlay" id="adminAuthOverlay">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <i class="fa-solid fa-bolt logo-icon"></i>
+                </div>
+                <h2>Tezkor Admin Panel</h2>
+                <p>Boshqaruv tizimiga kirish uchun login va parolni kiriting</p>
+            </div>
+
+            <div class="auth-hint-box">
+                <i class="fa-solid fa-circle-info"></i> Standart Login: <strong>admin</strong> | Parol: <strong>12345</strong>
+            </div>
+
+            <form onsubmit="handleAdminLogin(event)">
+                <div class="form-group">
+                    <label><i class="fa-solid fa-user"></i> Login yoki Email</label>
+                    <input type="text" id="adminAuthLogin" placeholder="Login (masalan: admin)" required autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fa-solid fa-lock"></i> Parol</label>
+                    <div class="password-input-wrap">
+                        <input type="password" id="adminAuthPassword" placeholder="Parol (masalan: 12345)" required autocomplete="current-password">
+                        <button type="button" class="toggle-pass-btn" onclick="togglePassVisibility()"><i class="fa-solid fa-eye" id="passEyeIcon"></i></button>
+                    </div>
+                </div>
+
+                <div class="auth-options">
+                    <label class="toggle-item"><input type="checkbox" id="rememberAdmin"> Meni eslab qol</label>
+                    <a href="#" onclick="alert('Parolni tiklash uchun qo\'llab-quvvatlash xizmatiga murojaat qiling: +998 71 200 00 00')">Parolni unutdingizmi?</a>
+                </div>
+
+                <div id="authErrorMsg" class="auth-error-msg"></div>
+
+                <button type="submit" class="auth-submit-btn">
+                    <i class="fa-solid fa-right-to-bracket"></i> Tizimga Kirish
+                </button>
+
+                <div class="register-link">
+                    <p>Hisobingiz yo'qmi? <a href="#" onclick="alert('Admin hisob yaratish uchun bosh administratorga murojaat qiling.')">Ro'yxatdan o'tish</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="admin-wrapper">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="#" class="admin-logo">
+                    <i class="fa-solid fa-bolt logo-icon"></i>
+                    <div class="logo-text">
+                        <span class="logo-title">Tezkor Admin</span>
+                        <span class="logo-subtitle">Boshqaruv Tizimi</span>
+                    </div>
+                </a>
+                <button class="close-sidebar-btn" onclick="toggleSidebar()">&times;</button>
+            </div>
+
+            <nav class="sidebar-menu">
+                <div class="menu-label">Asosiy Menyular</div>
+                <a href="#" class="menu-item active" onclick="switchTab('dashboard', this)">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="menu-item" onclick="switchTab('products', this)">
+                    <i class="fa-solid fa-box-archive"></i>
+                    <span>Mahsulotlar</span>
+                </a>
+                <a href="#" class="menu-item" onclick="switchTab('users', this)">
+                    <i class="fa-solid fa-users-gear"></i>
+                    <span>Foydalanuvchilar</span>
+                    <span class="nav-badge green" id="onlineUserCount">48</span>
+                </a>
+                <a href="#" class="menu-item" onclick="switchTab('reports', this)">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Hisobotlar</span>
+                </a>
+                <a href="#" class="menu-item" onclick="switchTab('accounting', this)">
+                    <i class="fa-solid fa-wallet"></i>
+                    <span>Buxgalteriya</span>
+                </a>
+
+                <div class="menu-label" style="margin-top: 20px;">Tizim</div>
+                <a href="#" class="menu-item" onclick="switchTab('settings', this)">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>Sozlamalar</span>
+                </a>
+                <a href="index.html" class="menu-item exit-store">
+                    <i class="fa-solid fa-store"></i>
+                    <span>Do'konga qaytish</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="admin-user-info">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80" alt="Admin Avatar" class="user-avatar">
+                    <div>
+                        <div class="user-name">Jahongir A.</div>
+                        <div class="user-role">Bosh Administrator</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <div class="main-wrapper">
+            <header class="top-navbar">
+                <div class="nav-left">
+                    <button class="toggle-sidebar-btn" onclick="toggleSidebar()">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="admin-search-box">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="adminGlobalSearch" placeholder="Mahsulot, foydalanuvchi yoki buyurtmalarni qidirish..." onkeyup="handleGlobalSearch()">
+                    </div>
+                </div>
+
+                <div class="nav-right">
+                    <div class="system-status">
+                        <span class="status-dot green"></span> Tizim Faol
+                    </div>
+
+                    <button class="nav-icon-btn" onclick="showToast('Bildirishnomalar yangilandi!')" title="Bildirishnomalar">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+
+                    <a href="index.html" class="btn btn-outline btn-sm">
+                        <i class="fa-solid fa-store"></i> Do'konga o'tish
+                    </a>
+
+                    <button class="btn btn-danger btn-sm" onclick="handleAdminLogout()" title="Tizimdan chiqish">
+                        <i class="fa-solid fa-power-off"></i> Chiqish
+                    </button>
+                </div>
+            </header>
+
+            <main class="admin-content">
+
+                <section class="tab-content active" id="tab-dashboard">
+                    <div class="content-header">
+                        <div>
+                            <h1 class="content-title">Dashboard Ko'rsatkichlari</h1>
+                            <p class="content-subtitle">Savdo va foydalanuvchilar faoliyatining umumiy sarhisobi</p>
+                        </div>
+                        <div class="date-filter">
+                            <i class="fa-regular fa-calendar"></i>
+                            <select id="dashDateFilter" onchange="updateDashboardMetrics()">
+                                <option value="today">Bugun</option>
+                                <option value="week">Shu Hafta</option>
+                                <option value="month" selected>Shu Oy (Avgust 2026)</option>
+                                <option value="year">Shu Yil (2026)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-icon purple"><i class="fa-solid fa-money-bill-wave"></i></div>
+                            <div class="metric-info">
+                                <span class="metric-label">Jami Tushum</span>
+                                <h2 class="metric-value" id="metricRevenue">184,500,000 so'm</h2>
+                                <span class="metric-change positive"><i class="fa-solid fa-arrow-up"></i> +14.2% o'sish</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon green"><i class="fa-solid fa-vault"></i></div>
+                            <div class="metric-info">
+                                <span class="metric-label">Sof Foyda</span>
+                                <h2 class="metric-value" id="metricProfit">42,800,000 so'm</h2>
+                                <span class="metric-change positive"><i class="fa-solid fa-arrow-up"></i> +8.5% marja</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon blue"><i class="fa-solid fa-user-check"></i></div>
+                            <div class="metric-info">
+                                <span class="metric-label">Faol Foydalanuvchilar</span>
+                                <h2 class="metric-value" id="metricUsers">1,420 ta</h2>
+                                <span class="metric-change positive"><i class="fa-solid fa-arrow-up"></i> +5.1% faollik</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon orange"><i class="fa-solid fa-cart-shopping"></i></div>
+                            <div class="metric-info">
+                                <span class="metric-label">Jami Buyurtmalar</span>
+                                <h2 class="metric-value" id="metricOrders">348 ta</h2>
+                                <span class="metric-change positive"><i class="fa-solid fa-arrow-up"></i> +12% o'sish</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-chart-area"></i> Sotuv va Daromad Dinamikasi</h3>
+                                <span class="card-tag">Oylik hisobot</span>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="salesChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-chart-pie"></i> Kategoriyalar Ulushi</h3>
+                                <span class="card-tag">Uzum/Tezkor</span>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="categoryChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tables-grid">
+                        <div class="table-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-clock-rotate-left"></i> Oxirgi Buyurtmalar</h3>
+                                <button class="btn btn-sm btn-outline" onclick="switchTab('reports', document.querySelectorAll('.menu-item')[3])">Barchasini ko'rish</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Mijoz</th>
+                                            <th>Mahsulot</th>
+                                            <th>Summa</th>
+                                            <th>Holat</th>
+                                            <th>Sana</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recentOrdersTable">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="table-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-triangle-exclamation" style="color: #f59e0b;"></i> Ombor Ogohlantirishlari</h3>
+                                <span class="card-tag red">Kam qolgan</span>
+                            </div>
+                            <div class="low-stock-list" id="lowStockList">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <section class="tab-content" id="tab-products">
+                    <div class="content-header">
+                        <div>
+                            <h1 class="content-title">Mahsulotlar Boshqaruvi</h1>
+                            <p class="content-subtitle">Barcha mahsulotlarni tahrirlash, o'chirish va yangi tovar qo'shish</p>
+                        </div>
+                        <div class="content-header-btns" style="display:flex; gap:10px;">
+                            <button class="btn btn-outline" onclick="openModal('adminCategoryModal')">
+                                <i class="fa-solid fa-folder-plus"></i> Kategoriya Qo'shish
+                            </button>
+                            <button class="btn btn-primary" onclick="openAddProductModal()">
+                                <i class="fa-solid fa-plus"></i> Yangi Mahsulot Qo'shish
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="filter-bar">
+                        <div class="search-input-wrapper">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="productSearchInput" placeholder="Mahsulot nomi yoki ID..." onkeyup="filterProductsTable()">
+                        </div>
+                        <div class="filter-selects">
+                            <select id="prodCategoryFilter" onchange="filterProductsTable()">
+                                <option value="all">Barcha Kategoriyalar</option>
+                                <option value="Telefonlar">Telefonlar</option>
+                                <option value="Elektronika">Elektronika</option>
+                                <option value="Maishiy texnika">Maishiy texnika</option>
+                                <option value="Kiyimlar">Kiyimlar</option>
+                                <option value="Aksessuarlar">Aksessuarlar</option>
+                            </select>
+
+                            <select id="prodStockFilter" onchange="filterProductsTable()">
+                                <option value="all">Barcha Qoldiqlar</option>
+                                <option value="instock">Zaxirada mavjud</option>
+                                <option value="lowstock">Kam qolgan (< 10)</option>
+                                <option value="outstock">Tugagan (0)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-card">
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Rasm</th>
+                                        <th>Mahsulot Nomi</th>
+                                        <th>Kategoriya</th>
+                                        <th>Tan Narxi</th>
+                                        <th>Sotuv Narxi</th>
+                                        <th>Foyda/Dona</th>
+                                        <th>Zaxira</th>
+                                        <th>Holat</th>
+                                        <th>Amallar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminProductsTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+
+                <section class="tab-content" id="tab-users">
+                    <div class="content-header">
+                        <div>
+                            <h1 class="content-title">Foydalanuvchilar Faoliyati va Loglar</h1>
+                            <p class="content-subtitle">Tizimdagi faol foydalanuvchilar, kirish/chiqishlar va harakatlar jurnali</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="openModal('adminUserModal')"><i class="fa-solid fa-user-plus"></i> Yangi Foydalanuvchi Qo'shish</button>
+                    </div>
+
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-icon green"><i class="fa-solid fa-circle-dot"></i></div>
+                            <div class="metric-info">
+                                <span class="metric-label">Hozir Online</span>
+                                <h2 class="metric-value">48 nafar</h2>
+                                <span class="metric-change positive">Jonli seanslar</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon blue"><i class="fa-solid fa-users"></i></div>
+                            <div class="metric-info">
+                                <span class="metric-label">Jami Mijozlar</span>
+                                <h2 class="metric-value">3,240 nafar</h2>
+                                <span class="metric-change positive">Ro'yxatdan o'tgan</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon purple"><i class="fa-solid fa-right-to-bracket"></i></div>
+                            <div class="metric-info">
+                                <span class="metric-label">Bugungi Kirishlar</span>
+                                <h2 class="metric-value">412 marotaba</h2>
+                                <span class="metric-change positive">Avtorizatsiya</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="split-grid">
+                        <div class="table-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-user-shield"></i> Foydalanuvchilar Ro'yxati</h3>
+                                <input type="text" class="table-search-input" id="userSearchInput" placeholder="Ism yoki email..." onkeyup="filterUsersTable()">
+                            </div>
+                            <div class="table-responsive">
+                                <table class="admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Foydalanuvchi</th>
+                                            <th>Rol</th>
+                                            <th>Oxirgi Faollik</th>
+                                            <th>IP Manzil</th>
+                                            <th>Status</th>
+                                            <th>Amallar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="usersTableBody">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="table-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-list-check"></i> Harakatlar Jurnali (Loglar)</h3>
+                                <span class="card-tag">Real-time</span>
+                            </div>
+                            <div class="activity-timeline" id="activityLogsList">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <section class="tab-content" id="tab-reports">
+                    <div class="content-header">
+                        <div>
+                            <h1 class="content-title">Hisobotlar va Tahlillar</h1>
+                            <p class="content-subtitle">Tafsilotli sotuv tahlillari, konversiya va eng mashhur tovarlar</p>
+                        </div>
+                        <button class="btn btn-outline" onclick="exportReportData()">
+                            <i class="fa-solid fa-download"></i> Hisobotni Yuklab Olish (CSV)
+                        </button>
+                    </div>
+
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-chart-column"></i> Oylik Daromad va Sof Foyda Taqqoslamasi</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="reportBarChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="table-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-trophy" style="color: #f59e0b;"></i> Eng Ko'p Sotilgan Mahsulotlar (Top 5)</h3>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Mahsulot Nomi</th>
+                                            <th>Sotilgan Soni</th>
+                                            <th>Jami Tushum</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="topSellingTable">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <section class="tab-content" id="tab-accounting">
+                    <div class="content-header">
+                        <div>
+                            <h1 class="content-title">Buxgalteriya va Moliya Hisob-kitobi</h1>
+                            <p class="content-subtitle">Daromad va xarajatlar tahlili, marja ko'rsatkichlari hamda tranzaksiyalar</p>
+                        </div>
+                        <button class="btn btn-success" onclick="openAddTransactionModal()">
+                            <i class="fa-solid fa-plus-circle"></i> Yangi Tranzaksiya Qo'shish
+                        </button>
+                    </div>
+
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-icon green"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                            <div class="metric-info">
+                                <span class="metric-label">Jami Yalpi Daromad</span>
+                                <h2 class="metric-value" id="finGrossRevenue">184,500,000 so'm</h2>
+                                <span class="metric-change positive">Savdo tushumi</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon red"><i class="fa-solid fa-arrow-trend-down"></i></div>
+                            <div class="metric-info">
+                                <span class="metric-label">Operatsion Xarajatlar</span>
+                                <h2 class="metric-value" id="finExpenses">141,700,000 so'm</h2>
+                                <span class="metric-change negative">Tan narx + logistika + reklama</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon purple"><i class="fa-solid fa-sack-dollar"></i></div>
+                            <div class="metric-info">
+                                <span class="metric-label">Sof Foyda (Net Profit)</span>
+                                <h2 class="metric-value" id="finNetProfit">42,800,000 so'm</h2>
+                                <span class="metric-change positive">Sof marja: 23.2%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-receipt"></i> Moliyaviy Tranzaksiyalar Jurnali</h3>
+                            <select id="transactionTypeFilter" onchange="filterTransactionsTable()">
+                                <option value="all">Barchasi</option>
+                                <option value="income">Faqat Daromadlar</option>
+                                <option value="expense">Faqat Xarajatlar</option>
+                            </select>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Sana</th>
+                                        <th>Tavsif / Tranzaksiya</th>
+                                        <th>Kategoriya</th>
+                                        <th>Turi</th>
+                                        <th>Summa</th>
+                                        <th>Status</th>
+                                        <th>Amallar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transactionsTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+
+                <section class="tab-content" id="tab-settings">
+                    <div class="content-header">
+                        <div>
+                            <h1 class="content-title">Tizim Sozlamalari</h1>
+                            <p class="content-subtitle">Do'kon, moliya, to'lovlar, xavfsizlik va bildirishnomalarni boshqarish</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveSettingsHandler(event)"><i class="fa-solid fa-floppy-disk"></i> Barcha Sozlamalarni Saqlash</button>
+                    </div>
+
+                    <div class="settings-grid">
+                        <div class="settings-card">
+                            <div class="settings-card-header">
+                                <i class="fa-solid fa-store card-icon"></i>
+                                <h3>Umumiy Do'kon Sozlamalari</h3>
+                            </div>
+                            <div class="form-group">
+                                <label>Do'kon Nomi</label>
+                                <input type="text" id="setStoreName" value="Tezkor Market" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Qo'llab-quvvatlash Telefoni</label>
+                                <input type="text" id="setStorePhone" value="+998 71 200 00 00">
+                            </div>
+                            <div class="form-group-row">
+                                <div class="form-group">
+                                    <label>Asosiy Valyuta</label>
+                                    <select id="setCurrency">
+                                        <option value="UZS">O'zbek so'mi (UZS)</option>
+                                        <option value="USD">AQSH dollari (USD)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Ish Rejimi</label>
+                                    <select id="setStoreHours">
+                                        <option value="24/7">24/7 Avtomatik</option>
+                                        <option value="09:00-22:00">09:00 - 22:00</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-card">
+                            <div class="settings-card-header">
+                                <i class="fa-solid fa-credit-card card-icon"></i>
+                                <h3>To'lov va Yetkazib Berish</h3>
+                            </div>
+                            <div class="form-group-row">
+                                <div class="form-group">
+                                    <label>Yetkazib Berish Narxi (so'm)</label>
+                                    <input type="number" id="setDeliveryFee" value="15000">
+                                </div>
+                                <div class="form-group">
+                                    <label>Bepul Yetkazish Min. Summasi</label>
+                                    <input type="number" id="setFreeDeliveryMin" value="150000">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>To'lov Tizimlari</label>
+                                <div class="toggle-list">
+                                    <label class="toggle-item"><input type="checkbox" checked> Payme Instant Pay</label>
+                                    <label class="toggle-item"><input type="checkbox" checked> Click Evolution</label>
+                                    <label class="toggle-item"><input type="checkbox" checked> Uzum Pay / Nasiya</label>
+                                    <label class="toggle-item"><input type="checkbox" checked> Naqd pulda yetkazish</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-card">
+                            <div class="settings-card-header">
+                                <i class="fa-solid fa-bell card-icon"></i>
+                                <h3>Ombor va Bildirishnomalar</h3>
+                            </div>
+                            <div class="form-group-row">
+                                <div class="form-group">
+                                    <label>Kam Ombor Chegarasi</label>
+                                    <input type="number" id="setLowStockThreshold" value="5">
+                                </div>
+                                <div class="form-group">
+                                    <label>Avto-yangilanish (sek.)</label>
+                                    <input type="number" id="setAutoRefresh" value="15">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Ogohlantirish Email Manzili</label>
+                                <input type="email" id="setAdminEmail" value="admin@tezkor.uz">
+                            </div>
+                            <div class="form-group">
+                                <label class="toggle-item"><input type="checkbox" checked> Telegram Bot orqali buyurtma xabari</label>
+                            </div>
+                        </div>
+
+                        <div class="settings-card">
+                            <div class="settings-card-header">
+                                <i class="fa-solid fa-shield-halved card-icon"></i>
+                                <h3>Xavfsizlik va Zaxira Nusxasi</h3>
+                            </div>
+                            <div class="form-group">
+                                <label>Admin Parolini Yangilash</label>
+                                <input type="password" id="setAdminPass" placeholder="Yangi parol kiritish">
+                            </div>
+                            <div class="form-group">
+                                <label class="toggle-item"><input type="checkbox" checked> 2FA Ikki bosqichli xavfsizlik</label>
+                            </div>
+                            <div class="settings-action-btns">
+                                <button type="button" class="btn btn-outline" onclick="exportDatabaseBackup()"><i class="fa-solid fa-download"></i> Zaxira Nusxasini Yuklash</button>
+                                <button type="button" class="btn btn-danger" onclick="resetDatabaseConfirm()"><i class="fa-solid fa-rotate-left"></i> Zavod Sozlamalari</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+
+    <div class="modal" id="adminProductModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('adminProductModal')">&times;</span>
+            <div class="modal-header">
+                <h2 id="modalProductTitle"><i class="fa-solid fa-box"></i> Yangi Mahsulot Qo'shish</h2>
+            </div>
+            <div class="modal-body">
+                <form id="productForm" onsubmit="saveProductHandler(event)">
+                    <input type="hidden" id="editProductId">
+                    <div class="form-group">
+                        <label>Mahsulot Nomi</label>
+                        <input type="text" id="prodFormName" placeholder="Masalan: Samsung Galaxy S24" required>
+                    </div>
+                    <div class="form-group-row">
+                        <div class="form-group">
+                            <label>Kategoriya</label>
+                            <select id="prodFormCategory">
+                                <option value="Telefonlar">Telefonlar</option>
+                                <option value="Elektronika">Elektronika</option>
+                                <option value="Maishiy texnika">Maishiy texnika</option>
+                                <option value="Kiyimlar">Kiyimlar</option>
+                                <option value="Aksessuarlar">Aksessuarlar</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Zaxira Soni (Omborda)</label>
+                            <input type="number" id="prodFormStock" placeholder="25" required min="0">
+                        </div>
+                    </div>
+                    <div class="form-group-row">
+                        <div class="form-group">
+                            <label>Tan Narxi (so'mda)</label>
+                            <input type="number" id="prodFormCostPrice" placeholder="10000000" required min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Sotuv Narxi (so'mda)</label>
+                            <input type="number" id="prodFormPrice" placeholder="12500000" required min="0">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Rasm URL</label>
+                        <input type="url" id="prodFormImage" placeholder="https://images.unsplash.com/...">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block"><i class="fa-solid fa-check"></i> Saqlash</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal" id="adminTransactionModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('adminTransactionModal')">&times;</span>
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-money-bill-transfer"></i> Yangi Tranzaksiya Qo'shish</h2>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="saveTransactionHandler(event)">
+                    <div class="form-group">
+                        <label>Tranzaksiya Turi</label>
+                        <select id="transFormType">
+                            <option value="income">Daromad (+)</option>
+                            <option value="expense">Xarajat (-)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tavsif (Nima uchun?)</label>
+                        <input type="text" id="transFormDesc" placeholder="Masalan: Server hosting to'lovi" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Kategoriya</label>
+                        <input type="text" id="transFormCategory" placeholder="Masalan: IT xarajatlar" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Summa (so'mda)</label>
+                        <input type="number" id="transFormAmount" placeholder="1500000" required min="1">
+                    </div>
+                    <button type="submit" class="btn btn-success btn-block"><i class="fa-solid fa-plus"></i> Qo'shish</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="adminUserModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('adminUserModal')">&times;</span>
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-user-plus"></i> Yangi Foydalanuvchi Qo'shish</h2>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="saveUserHandler(event)">
+                    <div class="form-group">
+                        <label>Foydalanuvchi F.I.Sh.</label>
+                        <input type="text" id="userFormName" placeholder="Masalan: Sardor Rahimov" required>
+                    </div>
+                    <div class="form-group-row">
+                        <div class="form-group">
+                            <label>Tizimdagi Rol</label>
+                            <select id="userFormRole">
+                                <option value="Super Admin">Super Admin</option>
+                                <option value="Menejer">Menejer</option>
+                                <option value="Kuryer">Kuryer</option>
+                                <option value="Mijoz">Mijoz</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>IP Manzil</label>
+                            <input type="text" id="userFormIp" placeholder="195.158.8.10" value="195.158.8.10" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Online Statusi</label>
+                        <select id="userFormOnline">
+                            <option value="true">Online (Faol)</option>
+                            <option value="false">Offline (Nofaol)</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block"><i class="fa-solid fa-check"></i> Foydalanuvchini Saqlash</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="adminCategoryModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('adminCategoryModal')">&times;</span>
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-folder-plus"></i> Yangi Kategoriya Qo'shish</h2>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="saveCategoryHandler(event)">
+                    <div class="form-group">
+                        <label>Kategoriya Nomi</label>
+                        <input type="text" id="catFormName" placeholder="Masalan: Avto Aksessuarlar" required>
+                    </div>
+                    <div class="form-group">
+                        <label>FontAwesome Ikonka Klassi</label>
+                        <input type="text" id="catFormIcon" placeholder="fa-solid fa-car" value="fa-solid fa-tag">
+                    </div>
+                    <button type="submit" class="btn btn-success btn-block"><i class="fa-solid fa-plus"></i> Kategoriyani Saqlash</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="adminToast"></div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
